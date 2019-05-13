@@ -9,6 +9,7 @@ MainMenu.prototype = {
         game.load.image('dude','assets/img/dummy.png');
         game.load.image('play','assets/img/play.png');
         game.load.image('help','assets/img/help.png');
+        game.load.audio('bg','assets/audio/bg_1.mp3');
 
         game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     },
@@ -23,6 +24,9 @@ MainMenu.prototype = {
         playB.anchor.set(0.5);
         var helpB = game.add.button(2*game.width/3, 2*game.height/3, 'help',this.helpT,this);
         helpB.anchor.set(0.5);
+
+        var bgmusic = game.add.audio('bg',0.5,true);
+        bgmusic.play();
     },
 
     update: function(){
@@ -240,7 +244,7 @@ game.state.add('MainMenu', MainMenu);
 game.state.add('Start', Start);
 game.state.add('startMap', startMap);
 game.state.add('Map1', Map1);
-game.state.add('Map2', Map2);
+//game.state.add('Map2', Map2);
 game.state.add('GameOver', GameOver);
 game.state.add('Help', Help);
 game.state.add('Statsup', Statsup);
