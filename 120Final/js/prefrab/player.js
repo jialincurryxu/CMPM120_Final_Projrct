@@ -1,9 +1,10 @@
-function Dude(game, key, posX, posY) {
+function Dude(game, key, posX, posY, time) {
 	Phaser.Sprite.call(this, game, posX, posY, key);
 
 	game.physics.arcade.enable(this);
 	this.anchor.set(0.5);
 	this.body.setSize(0.6*this.width, 0.8*this.height, 0.2*this.width, 0.1*this.height);
+	this.time = time;
 }
 
 
@@ -24,5 +25,9 @@ Dude.prototype.update = function() {
         this.body.velocity.x = -500;
     } else if (cursors.right.isDown){
         this.body.velocity.x = 500;
+    }
+
+    if (this.body.deltaX()>10){
+    	this.time-=10;
     }
 }
