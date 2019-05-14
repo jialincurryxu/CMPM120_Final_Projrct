@@ -43,11 +43,16 @@ MainMenu.prototype = {
 }
 
 var dude;
-var mStart;
+var mbg;
+var mcollision;
 var map;
+var mobj;
 var mLvl1;
+var doors;
 
-var Start = function(game) {};
+var Start = function(game) {
+	this.doors;
+};
 Start.prototype = {
     init: function(){
         
@@ -62,80 +67,57 @@ Start.prototype = {
 
         map = game.add.tilemap('mStart');
         map.addTilesetImage('tile','tile');
-        mStart = map.createLayer('bg');
-        mStart = map.createLayer('collision');
+        mbg = map.createLayer('bg');
+        mcollision = map.createLayer('collision');
         map.setCollision(2,true,'collision');
-        //map.setTileIndexCallback(3, this.nextM, this);
-
 
         dude = new Dude(game,'dude',600,600);
         game.add.existing(dude);
-        
+
+        doors = game.add.group();
+        doors.enableBody = true;
+        map.createFromObjects('door', 3, null, 0, true, false, doors);
+        console.log(doors.countLiving());
     },
 
     update: function(){
-        game.physics.arcade.collide(dude, mStart);
+        game.physics.arcade.collide(dude, mcollision);
+        game.physics.arcade.overlap(dude, doors, this.nextM, null, this);
     },
 
     render:function() {
         game.debug.body(dude);
     },
 
-    nextM: function() {
-        if (600<dude.body.x<800){
+    nextM: function(dude, doors) {
+        /*if (600<dude.body.x<800){
             dude.body.y = 1100 - dude.body.y;
         } 
         if (500<dude.body.y<700){
             dude.body.x = 1100 - dude.body.x;
-        }
-        game.state.start('Map1',false,false);
-    }
-    }
-
-    var startMap = function(game) {};
-startMap.prototype = {
-    init: function() {
-        
-    },
-
-    preload: function() {
-        
-    },
-
-    create: function() {
-        map = game.add.tilemap('mStart');
-        map.addTilesetImage('tile','tile');
-
-        mStart = map.createLayer('level');
-        map.setCollision(2,'level');
-        map.setTileIndexCallback(3, this.nextM, this);
-        game.world.bringToTop(dude);
-    },
-    render:function() {
-        game.debug.body(dude);
-    },
-
-    update: function(){
-        game.physics.arcade.collide(dude, mLvl1);
-
-        
-    },
-    nextM: function() {
-        if (600<dude.body.x<800){
-            dude.body.y = 1100 - dude.body.y;
-        } 
-        if (500<dude.body.y<700){
-            dude.body.x = 1100 - dude.body.x;
-        }
-        game.state.start('Map1',false,false);
+        }*/
+        console.log('door!');
+        game.state.start('Map1',true,false,dude.body.x,dude.body.y);
     }
     } 
-    
 
-    var Map1 = function(game) {};
+    var Map1 = function(game) {
+    	this.bodyX;
+    	this.bodyY;
+    };
     Map1.prototype = {
-    init: function() {
-        
+    init: function(bodyX,bodyY) {
+    	this.bodyX = 0;
+    	this.bodyY = 0;
+    	console.log(bodyX+'  '+bodyY);
+        if (500<bodyX<700){
+            this.bodyY = 1100 - bodyY;
+            this.bodyX = bodyX;
+        } else {
+            this.bodyX = 1150 - bodyX;
+            this.bodyY = bodyY;
+        }
+        console.log(this.bodyX+'  '+this.bodyY);
     },
 
     preload: function() {
@@ -146,10 +128,16 @@ startMap.prototype = {
     create: function() {
         map = game.add.tilemap('mLvl1');
         map.addTilesetImage('tile','tile');
+        mbg = map.createLayer('bg');
+        mcollision = map.createLayer('collision');
+        map.setCollision(2,true,'collision');
+        doors = game.add.group();
+        doors.enableBody = true;
+        map.createFromObjects('door', 3, null, 0, true, false, doors);
+        console.log(doors.countLiving());
 
-        mLvl1 = map.createLayer('level');
-        map.setCollision(2,'level');
-        map.setTileIndexCallback(3, this.nextM, this);
+        dude = new Dude(game,'dude',this.bodyX,this.bodyY);
+        game.add.existing(dude);
         game.world.bringToTop(dude);
     },
 
@@ -158,19 +146,19 @@ startMap.prototype = {
     },
 
     update: function(){
-        game.physics.arcade.collide(dude, mLvl1);
+        game.physics.arcade.collide(dude, mcollision);
 
         
     },
     nextM: function() {
-        if (600<dude.body.x<800){
+        /*if (600<dude.body.x<800){
             dude.body.y = 1100 - dude.body.y;
         } 
         if (500<dude.body.y<700){
             dude.body.x = 1100 - dude.body.x;
-        }
-        map.setCollision(2,false,'level');
-        game.state.start('startMap',false,false);
+        }*/
+        
+        game.state.start('Start');
     }
     }
 
@@ -242,7 +230,6 @@ Statsup.prototype = {
 // Set up the state manager and start from main menu
 game.state.add('MainMenu', MainMenu);
 game.state.add('Start', Start);
-game.state.add('startMap', startMap);
 game.state.add('Map1', Map1);
 //game.state.add('Map2', Map2);
 game.state.add('GameOver', GameOver);
