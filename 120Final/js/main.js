@@ -14,6 +14,7 @@ MainMenu.prototype = {
         game.load.image('sword','assets/img/sword.png');
         game.load.image('shield','assets/img/shield.png');
         game.load.image('monster','assets/img/monster.png');
+        game.load.image('trophy','assets/img/golden_trophy.png');
         game.load.audio('bg','assets/audio/bg_1.mp3');
 
         //rescale the game
@@ -24,7 +25,7 @@ MainMenu.prototype = {
     	//give thestart screen a color
         game.stage.backgroundColor = '#9b7653';
         //the title
-        title = game.add.text(game.width/2, game.height/3 , "Stand/By the Time",{font:'Source Sans Pro',fontSize: '80px', fill: '#ffffff',wordWrap: true, wordWrapWidth: game.width - 240});
+        title = game.add.text(game.width/2, game.height/3 , "Time Tower",{font:'Source Sans Pro',fontSize: '50px', fill: '#ffffff',wordWrap: true, wordWrapWidth: game.width - 240});
         title.anchor.x = 0.5;
         title.anchor.y = 0.5;
         //enable input & create the buttons
@@ -50,7 +51,7 @@ MainMenu.prototype = {
     },
     helpT: function(){
     	//Waiting for more detailed story to replace it with a proper state
-    	title.text = 'This is the place holder for background story, use cursors to move the character, picking any power will reduce the total time you have left. You lose when you have no time left'
+    	title.text = 'This is the place holder for background story, use arrow keys to move the character, picking any power will reduce the total time you have left. You lose when you have no time left'
     }
 }
 
@@ -66,6 +67,7 @@ var time;
 var timeText;
 var def=5;
 var atk=5;
+var trophy;
 
 var Start = function(game) {
 	this.doors;
@@ -101,6 +103,8 @@ Start.prototype = {
     },
 
     create: function(){
+        def=5;
+        atk=5;
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //add the map
         map = game.add.tilemap('mStart');
@@ -310,7 +314,12 @@ var Map2 = function(game) {
 
         //if the player beat the monster
     	if (monster.countLiving()==0){
-        	game.state.start('GameOver',true,false,false);
+        	//game.state.start('GameOver',true,false,false);
+            trophy = game.add.sprite(game.width/2,2*game.height/3,'trophy');
+            trophy.scale.setTo(0.2,0.2);
+            trophy.anchor.set(0.5);
+            game.physics.arcade.enable(trophy);
+            game.physics.arcade.overlap(dude, trophy, this.ifKilled, null, this);
         }
         //if the player run out of time
         if (time<=0){
@@ -328,9 +337,14 @@ var Map2 = function(game) {
     		game.state.start('Map1',true,false,dude.body.x,dude.body.y);
     	
     },
+
+    ifKilled:function(player,trophy){
+        game.state.start('GameOver',true,false,false);
+    },
     //test if the player can kill the monster
     ifKill:function(player, monster){
     	if(this.battle(atk,def,15,10,100)){
+            
     		monster.kill();
     		return true;
     	}else{

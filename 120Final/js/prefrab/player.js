@@ -23,8 +23,10 @@ Dude.prototype.update = function() {
 
     if (cursors.left.isDown){
         this.body.velocity.x = -500;
+        this.scale.setTo(1,1);
     } else if (cursors.right.isDown){
         this.body.velocity.x = 500;
+        this.scale.setTo(-1,1);
     }
 
     if (this.body.deltaX()>10){

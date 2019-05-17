@@ -1,7 +1,10 @@
 body {
 	font-family: Helvetica;
+	display: table-cell;
+    vertical-align: middle;
 }
 
 canvas {
 	border: 1px solid black;
 }
+
